@@ -1,20 +1,38 @@
 
-import Topnavbar from '@/app/navigation/topnavbar';
-import React from 'react';
-import { ScrollView, View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Alert } from 'react-native';
-import { AppButton, AppText, AppView, BoxView, RowView } from 'react-native-quick-components';
+import React, { useState } from 'react';
+import { ScrollView, View, Alert, TextInput } from 'react-native';
+import { AppText, AppView, BoxView, RowView } from 'react-native-quick-components';
 import { ScaledSheet } from "react-native-size-matters";
 
-export default function TabTwoScreen() {
-  const data = [
-    { id: '1', name: 'John Doe', age: 28, gender: 'Male', halthId: 'AHRBJ12' },
-    { id: '2', name: 'Jane Doe', age: 22, gender: 'Female', halthId: 'AHRBJ16' },
-    { id: '3', name: 'Sam Smith', age: 24, gender: 'Male', halthId: 'AHBJ100' },
-    { id: '4', name: 'Sara Wilson', age: 29, gender: 'Female', halthId: 'AHRBJ19' },
-  ];
+import Topnavbar from '../navigation/topnavbar';
+import { useGetallPaitentDataQuery } from '../redux/Api';
+import { router } from 'expo-router';
 
-  const reportData = () => {
-    Alert.alert("Coming to video call");
+export default function TabTwoScreen() {
+  const { data, isLoading, error } = useGetallPaitentDataQuery();
+
+  // Initialize state for the search query
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Filter patients based on the search query
+  const patients = data?.data?.data || [];
+  const filteredPatients = patients.filter(patient =>
+    patient.patientDetails?.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    patient.patientDetails?.healthId.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Handle error and loading states
+  if (isLoading) {
+    return <AppText>Loading...</AppText>;
+  }
+
+  if (error) {
+    return <AppText>Error loading patient data</AppText>;
+  }
+
+  // Alert for video call
+  const handleReport = () => {
+    router.push('/(Report)/Index')
   };
 
   return (
@@ -22,15 +40,23 @@ export default function TabTwoScreen() {
       <Topnavbar />
       <AppView style={styles.container1}>
         <View style={styles.content}>
-          <AppText C="#333335" F_WEIGHT="700" F_SIZE={23} style={{ fontFamily: 'Biryani, sans-serif' }}>
-          Paitent List
+          <AppText C="#333335" F_WEIGHT="700" F_SIZE={19} style={{ fontFamily: 'Biryani, sans-serif' }}>
+            Patient List
           </AppText>
+          <TextInput
+          style={styles.searchBox}
+          placeholder="Search by Name or Health ID"
+          value={searchQuery}
+          onChangeText={text => setSearchQuery(text)}
+        />
         </View>
+
+        {/* Search Box */}
+     
+
         <ScrollView>
           <BoxView BG="white" MT={20} BOR={20} style={styles.shadowBox}>
             <BoxView P={10}>
-              {/* <AppView style={styles.hrRow} /> */}
-              {/* <AppView style={styles.hr} /> */}
               <RowView style={styles.tableHeader}>
                 <AppText F_SIZE={16} C="#050A30" style={{ fontFamily: 'Biryani, sans-serif' }}>S.No</AppText>
                 <AppText F_SIZE={16} C="#050A30" style={{ fontFamily: 'Biryani, sans-serif' }}>Patient Name</AppText>
@@ -38,12 +64,18 @@ export default function TabTwoScreen() {
                 <AppText F_SIZE={16} C="#050A30" style={{ fontFamily: 'Biryani, sans-serif' }}>HealthId</AppText>
               </RowView>
               <AppView style={styles.hr1} />
-              {data.map((item, index) => (
-                <RowView key={item.id} style={styles.tableRow}>
-                  <AppText F_SIZE={16} C="#050A30" style={{ fontFamily: 'Biryani, sans-serif' }}>{index + 1}</AppText>
-                  <AppText F_SIZE={16} C="#353A5E" style={{ fontFamily: 'Biryani, sans-serif' }}>{item.name}</AppText>
-                  <AppText F_SIZE={16} C="#353A5E" style={{ fontFamily: 'Biryani, sans-serif' }}>{item.age}</AppText>
-                  <AppText F_SIZE={16} C="#353A5E" style={{ fontFamily: 'Biryani, sans-serif' }}>{item.halthId}</AppText>
+              {filteredPatients.map((patient, index) => (
+                <RowView key={patient._id} style={styles.tableRow} onPress={handleReport}>
+                  <AppText F_SIZE={14} C="#050A30" style={{ fontFamily: 'Biryani, sans-serif' }}>{index + 1}</AppText>
+                  <AppText F_SIZE={14} C="#050A30" style={{ fontFamily: 'Biryani, sans-serif' }}>
+                    {patient.patientDetails?.fullName || 'N/A'}
+                  </AppText>
+                  <AppText F_SIZE={14} C="#050A30" style={{ fontFamily: 'Biryani, sans-serif' }}>
+                    {patient.patientDetails?.age || 'N/A'}
+                  </AppText>
+                  <AppText F_SIZE={14} C="#050A30" style={{ fontFamily: 'Biryani, sans-serif' }}>
+                    {patient.patientDetails?.healthId || 'N/A'}
+                  </AppText>
                 </RowView>
               ))}
             </BoxView>
@@ -68,50 +100,45 @@ const styles = ScaledSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  hr: {
+  searchBox: {
+    height: 40,
+    width:240,
+    borderColor: '#EFEFEF',
     borderWidth: 1,
-    marginTop: '10@msr',
-    borderColor: "#EFEFEFE5",
+    borderRadius: 8,
+ 
+    fontSize: 16,
+    backgroundColor: '#FFFFFF',
   },
   hr1: {
     borderWidth: 0.5,
     marginTop: "10@msr",
     borderColor: "#EFEFEFE5",
   },
-  hrRow: {
-    marginTop: "10@msr",
-    borderColor: "#EFEFEFE5",
-    borderWidth: 2,
-  },
   tableHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: "15@msr",
     paddingVertical: 5,
+   
+    paddingHorizontal: 10,
   },
   tableRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: "40@msr",
-    alignItems: 'center',
+    marginTop: "10@msr",
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    borderBottomWidth: 0.5,
+    borderColor: "#EFEFEFE5",
+    
   },
+
   shadowBox: {
     shadowColor: '#EDEDED',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 1,
     shadowRadius: 3.84,
     elevation: 5,
-  },
-  button: {
-    borderRadius: "10@msr",
-    backgroundColor: '#050A30',
-    padding: "10@msr",
-    paddingLeft: "20@msr",
-    paddingRight: '20@msr',
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
   },
 });

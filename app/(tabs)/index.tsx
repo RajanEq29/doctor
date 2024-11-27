@@ -1,19 +1,18 @@
 import React from 'react';
-import { ScrollView, View, Text, TouchableOpacity, Button } from 'react-native';
-// Ensure correct path
+import { ScrollView, View, Text, TouchableOpacity } from 'react-native';
+ // Ensure correct path
 import { AppText, AppView, BoxView, RowView } from 'react-native-quick-components';
 import { ScaledSheet } from "react-native-size-matters";
 import { useRouter } from 'expo-router';  // Import useRouter
 
-
-import Topnavbar from '@/app/navigation/topnavbar';
-import { useGetAllPatientDataQuery } from '@/app/redux/Api';
-
+import CallScreen from'../videoCall/Call'
+import { useGetAllPatientDataQuery } from '../redux/Api';
+import Topnavbar from '../navigation/topnavbar';
 
 export default function Index() {
   const { data, isSuccess } = useGetAllPatientDataQuery();
   const router = useRouter();  // Initialize the router
- 
+
   return (
     <AppView style={styles.container}>
       <Topnavbar />
@@ -40,7 +39,12 @@ export default function Index() {
                   <AppText F_SIZE={16} C="#050A30">{index + 1}</AppText>
                   <AppText F_SIZE={16} C="#353A5E">{item.name_of_center}</AppText>
                   <AppText F_SIZE={16} C="#353A5E">{item.no_of_patients_in_WR}</AppText>
-                  <Button title="Go to Call Screen"  />
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => router.push('/videoCall/call')}
+                  >
+                    <Text style={styles.buttonText}>Video Call</Text>
+                  </TouchableOpacity>
                 </RowView>
               ))}
             </BoxView>

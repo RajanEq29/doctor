@@ -29,9 +29,15 @@ export const shatayu = createApi({
         method: 'GET',
       }),
     }),
+    getallPaitentData: builder.query({
+      query: (id) => ({
+        url: `https://shatayu.online/doctor/getUniquePatientsListsConsultedByDoctor?page=1&limit=10`,
+        method: 'GET',
+      }),
+    }),
     viewReport: builder.query({
       query: (id) => ({
-        url: `/patient/getPatientsHealthPassportById/${id}`,
+        url: `doctor/getPatientsTestsRecord/66ee5cd76d1e728b37224a4f`,
         method: 'GET',
       }),
     }),
@@ -44,4 +50,4 @@ export const shatayu = createApi({
   }),
 });
 
-export const { useLoginMutation, useGetAllPatientDataQuery, useViewReportQuery, useGetReportDataQuery } = shatayu;
+export const { useLoginMutation, useGetAllPatientDataQuery, useViewReportQuery, useGetReportDataQuery,useGetallPaitentDataQuery } = shatayu;
