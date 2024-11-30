@@ -1,38 +1,26 @@
-
 import React, { useState } from 'react';
-import { ScrollView, View, Alert, TextInput } from 'react-native';
+import { ScrollView, View, TextInput } from 'react-native';
 import { AppText, AppView, BoxView, RowView } from 'react-native-quick-components';
-import { ScaledSheet } from "react-native-size-matters";
-
+import { ScaledSheet, ms } from 'react-native-size-matters';  // Responsive units
 import Topnavbar from '../navigation/topnavbar';
 import { useGetallPaitentDataQuery } from '../redux/Api';
 import { router } from 'expo-router';
 
 export default function TabTwoScreen() {
   const { data, isLoading, error } = useGetallPaitentDataQuery();
-
-  // Initialize state for the search query
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Filter patients based on the search query
   const patients = data?.data?.data || [];
   const filteredPatients = patients.filter(patient =>
     patient.patientDetails?.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
     patient.patientDetails?.healthId.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Handle error and loading states
-  if (isLoading) {
-    return <AppText>Loading...</AppText>;
-  }
+  if (isLoading) return <AppText>Loading...</AppText>;
+  if (error) return <AppText>Error loading patient data</AppText>;
 
-  if (error) {
-    return <AppText>Error loading patient data</AppText>;
-  }
-
-  // Alert for video call
-  const handleReport = () => {
-    router.push('/(Report)/Index')
+  const handleReport = (patientId) => {
+    router.push({ pathname: '/(Report)/Index', params: { id: patientId } });
   };
 
   return (
@@ -40,42 +28,39 @@ export default function TabTwoScreen() {
       <Topnavbar />
       <AppView style={styles.container1}>
         <View style={styles.content}>
-          <AppText C="#333335" F_WEIGHT="700" F_SIZE={19} style={{ fontFamily: 'Biryani, sans-serif' }}>
-            Patient List
-          </AppText>
+          <AppText style={styles.title}>Patient List</AppText>
           <TextInput
-          style={styles.searchBox}
-          placeholder="Search by Name or Health ID"
-          value={searchQuery}
-          onChangeText={text => setSearchQuery(text)}
-        />
+            style={styles.searchBox}
+            placeholder="Search by Name or Health ID"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
         </View>
 
-        {/* Search Box */}
-     
-
+        {/* Patient Table */}
         <ScrollView>
           <BoxView BG="white" MT={20} BOR={20} style={styles.shadowBox}>
             <BoxView P={10}>
               <RowView style={styles.tableHeader}>
-                <AppText F_SIZE={16} C="#050A30" style={{ fontFamily: 'Biryani, sans-serif' }}>S.No</AppText>
-                <AppText F_SIZE={16} C="#050A30" style={{ fontFamily: 'Biryani, sans-serif' }}>Patient Name</AppText>
-                <AppText F_SIZE={16} C="#050A30" style={{ fontFamily: 'Biryani, sans-serif' }}>Age</AppText>
-                <AppText F_SIZE={16} C="#050A30" style={{ fontFamily: 'Biryani, sans-serif' }}>HealthId</AppText>
+                <AppText style={styles.headerText}>S.No</AppText>
+                <AppText style={styles.headerText}>Patient Name</AppText>
+                <AppText style={styles.headerText}>Age</AppText>
+                <AppText style={styles.headerText}>Health ID</AppText>
               </RowView>
               <AppView style={styles.hr1} />
+
               {filteredPatients.map((patient, index) => (
-                <RowView key={patient._id} style={styles.tableRow} onPress={handleReport}>
-                  <AppText F_SIZE={14} C="#050A30" style={{ fontFamily: 'Biryani, sans-serif' }}>{index + 1}</AppText>
-                  <AppText F_SIZE={14} C="#050A30" style={{ fontFamily: 'Biryani, sans-serif' }}>
+                <RowView
+                  key={patient._id}
+                  style={styles.tableRow}
+                  onPress={() => handleReport(patient._id)}
+                >
+                  <AppText style={styles.cellText}>{index + 1}</AppText>
+                  <AppText style={styles.cellText} numberOfLines={1} ellipsizeMode="tail">
                     {patient.patientDetails?.fullName || 'N/A'}
                   </AppText>
-                  <AppText F_SIZE={14} C="#050A30" style={{ fontFamily: 'Biryani, sans-serif' }}>
-                    {patient.patientDetails?.age || 'N/A'}
-                  </AppText>
-                  <AppText F_SIZE={14} C="#050A30" style={{ fontFamily: 'Biryani, sans-serif' }}>
-                    {patient.patientDetails?.healthId || 'N/A'}
-                  </AppText>
+                  <AppText style={styles.cellText}>{patient.patientDetails?.age || 'N/A'}</AppText>
+                  <AppText style={styles.cellText}>{patient.patientDetails?.healthId || 'N/A'}</AppText>
                 </RowView>
               ))}
             </BoxView>
@@ -93,47 +78,58 @@ const styles = ScaledSheet.create({
   },
   container1: {
     flex: 1,
-    margin: '25@msr',
+    margin: '20@msr',
   },
   content: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: '10@msr',
+  },
+  title: {
+    color: '#333335',
+    fontWeight: '700',
+    fontSize: '19@msr',
   },
   searchBox: {
-    height: 40,
-    width:240,
+    height: '40@msr',
+    width: '60%',  // Relative width for responsiveness
     borderColor: '#EFEFEF',
     borderWidth: 1,
     borderRadius: 8,
- 
-    fontSize: 16,
+    fontSize: '16@msr',
     backgroundColor: '#FFFFFF',
+    paddingHorizontal: '10@msr',
   },
   hr1: {
     borderWidth: 0.5,
-    marginTop: "10@msr",
-    borderColor: "#EFEFEFE5",
+    marginTop: '10@msr',
+    borderColor: '#EFEFEF',
   },
   tableHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: "15@msr",
-    paddingVertical: 5,
-   
-    paddingHorizontal: 10,
+    paddingVertical: '5@msr',
+  },
+  headerText: {
+    fontSize: '14@msr',
+    color: '#050A30',
+    flex: 1,  // Distribute columns equally
+    textAlign: 'center',
   },
   tableRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: "10@msr",
-    paddingVertical: 10,
-    paddingHorizontal: 10,
+    paddingVertical: '10@msr',
     borderBottomWidth: 0.5,
-    borderColor: "#EFEFEFE5",
-    
+    borderColor: '#EFEFEF',
   },
-
+  cellText: {
+    fontSize: '14@msr',
+    color: '#050A30',
+    flex: 1,
+    textAlign: 'center',
+  },
   shadowBox: {
     shadowColor: '#EDEDED',
     shadowOffset: { width: 0, height: 2 },
