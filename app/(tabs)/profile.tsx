@@ -40,8 +40,10 @@ export default function ProfileScreen() {
             </AppView>
             <AppView style={{
                 flex: 1,
-                margin: 25
+                margin: 25,
+                marginBottom:20
             }}>
+               
                 <BoxView BG="white" MT={20} BOR={5} style={styles.shadowBox}>
                     <BoxView P={10} PX={10}>
                         <AppText F_SIZE={10} F_WEIGHT="600" C="black">
@@ -114,6 +116,7 @@ export default function ProfileScreen() {
                     <AppText C="#050A30"><AntDesign name="right" size={24} color="black" /></AppText>
                     </AppView>
                 </BoxView>
+               
             </AppView>
 
            
@@ -150,6 +153,7 @@ const styles = StyleSheet.create({
         shadowRadius: 50,
         elevation: 2,
     },
+   
 
 
 });

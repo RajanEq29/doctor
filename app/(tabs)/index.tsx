@@ -32,22 +32,13 @@ export default function Index() {
                 <RowView key={item._id} style={styles.tableRow}>
                   <AppText style={styles.cellText}>{index + 1}</AppText>
                   <AppText style={styles.cellText} numberOfLines={1} ellipsizeMode="tail">
-                    <BoxView
-                      H={10}
-                      W={10}
-                      BOR={500}
-                      style={[
-                        styles.statusIndicator,
-                        item.status === 'Login' ? { backgroundColor: 'green' } :
-                          item.status === 'Logout' ? { backgroundColor: 'red' } :
-                            { backgroundColor: '#FFBF00' } // Default for 'not_logged_in'
-                      ]}
-                    /> {item.name_of_center}
+                   
+                   {item.name_of_center} 
                   </AppText>
                   <AppText style={styles.cellText}>{item.no_of_patients_in_WR}</AppText>
                   <TouchableOpacity
                     style={styles.button}
-                    onPress={() => router.push('/videoCall/call')}
+                    onPress={() => router.push('/(VideoCall)/Index')}
                   >
                     <Text style={styles.buttonText}>Video Call</Text>
                   </TouchableOpacity>
@@ -83,7 +74,7 @@ const styles = ScaledSheet.create({
     fontSize: '20@msr',
   },
   scrollViewContent: {
-    paddingBottom: '20@msr',
+    paddingBottom: '25@msr',
   },
   hr: {
     borderBottomWidth: 1,

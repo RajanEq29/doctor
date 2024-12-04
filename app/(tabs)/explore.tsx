@@ -26,6 +26,7 @@ export default function TabTwoScreen() {
   return (
     <AppView style={styles.container}>
       <Topnavbar />
+      
       <AppView style={styles.container1}>
         <View style={styles.content}>
           <AppText style={styles.title}>Patient List</AppText>
@@ -38,7 +39,7 @@ export default function TabTwoScreen() {
         </View>
 
         {/* Patient Table */}
-        <ScrollView>
+        <ScrollView contentContainerStyle={styles.scrollViewContent}>
           <BoxView BG="white" MT={20} BOR={20} style={styles.shadowBox}>
             <BoxView P={10}>
               <RowView style={styles.tableHeader}>
@@ -136,5 +137,8 @@ const styles = ScaledSheet.create({
     shadowOpacity: 1,
     shadowRadius: 3.84,
     elevation: 5,
+  },
+  scrollViewContent: {
+    paddingBottom: '30@msr',
   },
 });
